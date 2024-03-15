@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+  .btn-secondary {
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+    margin-left: 16px;
+  }
+
+  .mt-4 {
+    margin-top: 4rem;
+  }
+
+  .card {
+    width: 80%;
+    margin: auto;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-header {
+    background-color: #6c757d;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    border-radius: 15px 15px 0 0;
+  }
+
+  .card-body {
+    padding: 20px;
+  }
+
+  .form-label {
+    font-weight: bold;
+    color: #333;
+    font-size: 1rem;
+  }
+
+  .form-control {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 8px;
+    font-size: 1rem;
+  }
+
+  .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    font-size: 1.2rem;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+</style>
+
+<!-- Button to go back to view all tasks -->
+<div class="text-start mt-3">
+  <a class="btn btn-secondary" href="{% url 'index' %}">View All Tasks</a>
+</div>
+
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="text-center">Edit Task</h2>
+    </div>
+    <div class="card-body">
+      <form method="post" action="{% url 'edit_todo' todo_id=todo.id %}">
+        {% csrf_token %}
+
+        <div class="form-group">
+          {{ form.title.label_tag }}
+          {{ form.title }}
+        </div>
+
+        <div class="form-group">
+          {{ form.description.label_tag }}
+          {{ form.description }}
+        </div>
+
+        <div class="form-group">
+          {{ form.due_date.label_tag }}
+          {{ form.due_date }}
+        </div>
+
+        <div class="form-group">
+          {{ form.status.label_tag }}
+          {{ form.status }}
+        </div>
+
+        <div class="text-center">
+          <button type="submit" class="btn btn-primary">Update Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

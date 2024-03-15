@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+  .container {
+    max-width: 800px;
+  }
+  
+  .card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-header {
+    background-color: #007bff;
+  }
+  
+  .card-header h5 {
+    margin-bottom: 0;
+  }
+  
+  .card-body {
+    text-align: center;
+  }
+  
+  .btn-secondary {
+    margin-bottom: 10px;
+  }
+  
+
+
+</style>
+  <div class="container mt-5">
+    <div class="text-start mb-3">
+      <a class="btn btn-secondary" href="{% url 'index' %}">Back to Tasks</a>
+    </div>
+    <div class="card">
+      <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">Task Management Chart</h5>
+      </div>
+      <div class="card-body">
+        {% if chart %}
+          <img class="img-fluid" src="data:image/png;base64, {{ chart|safe }}" alt="Task Distribution Chart" />
+        {% else %}
+          <p class="text-muted">No data available for chart.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

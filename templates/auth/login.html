@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login System</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: #f4f4f4;
+    }
+
+    .login-container {
+      width: 350px;
+      padding: 30px;
+      background-color: #fff;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .login-container h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 16px;
+      margin-bottom: 8px;
+      color: #555;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    .password-container {
+      position: relative;
+    }
+
+    .password-icon {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      cursor: pointer;
+      margin-top: 14px;
+    }
+
+    .form-group button {
+      width: 100%;
+      padding: 12px;
+      background-color: #4caf50;
+      color: #fff;
+      font-size: 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .form-group button:hover {
+      background-color: #45a049;
+    }
+
+    .register-link,
+    .forgot-password-link {
+      font-size: 14px;
+      color: #555;
+      text-decoration: none;
+      display: block;
+      margin-top: 10px;
+    }
+
+    .register-link:hover,
+    .forgot-password-link:hover {
+      color: #4caf50;
+    }
+
+    .alert {
+      z-index: 1000; /* or any value higher than the z-index of other elements */
+    }
+
+    @media (max-width: 400px) {
+      .login-container {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div>
+    
+  </div>
+  <div class="login-container">
+    <h2>Login</h2>
+    <form action="{% url 'login' %}" method="post" id="login-form">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required />
+      </div>
+
+      <div class="form-group password-container">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required />
+        <span class="password-icon" onclick="togglePasswordVisibility()">
+          <i class="bi bi-eye-slash" style="color: black;"></i>
+        </span>
+      </div>
+
+      <div class="form-group">
+        <button type="submit">Login</button>
+      </div>
+    </form>
+    <a href="{%url 'forget_password' %}" class="forgot-password-link ">Forgot Password?</a>
+    <a href="{% url 'signup' %}" class="register-link">Don't have an account? Register here.</a>
+  </div>
+
+  <script>
+    function togglePasswordVisibility() {
+      var passwordInput = document.getElementById('password');
+      var passwordIcon = document.querySelector('.password-icon i');
+
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        passwordIcon.classList.remove('bi-eye-slash');
+        passwordIcon.classList.add('bi-eye');
+      } else {
+        passwordInput.type = 'password';
+        passwordIcon.classList.remove('bi-eye');
+        passwordIcon.classList.add('bi-eye-slash');
+      }
+    }
+  </script>
+  
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+<script>
+  {% for message in messages %}
+    toastr["{{ message.tags }}"]("{{ message }}");
+  {% endfor %}
+</script>
+</body>
+</html>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+</body>
+</html>

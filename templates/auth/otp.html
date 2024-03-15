@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <title>OTP Verification</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .otp-container {
+            background-color: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            text-align: center;
+            padding: 20px;
+            width: 80%;
+            max-width: 400px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .otp-input {
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            margin: 0 5px;
+            text-align: center;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        @media screen and (max-width: 600px) {
+            .otp-input {
+                width: 30px;
+                height: 30px;
+                font-size: 14px;
+            }
+
+            button {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="otp-container">
+        <h2>Enter OTP</h2>
+        <form method="post" action="/">
+            {% csrf_token %}
+            <div>
+                <input type="text" class="otp-input" maxlength="1" name="digit1">
+                <input type="text" class="otp-input" maxlength="1" name="digit2">
+                <input type="text" class="otp-input" maxlength="1" name="digit3">
+                <input type="text" class="otp-input" maxlength="1" name="digit4">
+            </div>
+            <button type="button" onclick="submitForm()">Verify OTP</button>
+        </form>
+    </div>
+
+    <script>
+        function submitForm() {
+            document.forms[0].submit();
+        }
+    </script>
+
+    <script>
+        {% for message in messages %}
+          toastr["{{ message.tags }}"]("{{ message }}");
+        {% endfor %}
+      </script>
+</body>
+</html>

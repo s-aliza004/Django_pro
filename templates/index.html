@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+{% load tz %}
+{% block content %}
+
+<style>
+    .text-end {
+        text-align: end;
+    }
+
+    @media (max-width: 576px) {
+        .text-end {
+            text-align: center;
+            margin-top: 10px;
+        }
+    }
+
+    .btn-success {
+        margin-top: 10px;
+    }
+
+    @media (max-width: 768px) {
+        table {
+            font-size: 14px;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .dropdown-toggle {
+            width: 100%;
+            text-align: left;
+        }
+    }
+
+    .btn-success {
+        margin-top: -1px;
+    }
+
+    /* Add this style to ensure the timer text is visible */
+    .timer-container {
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    /* Style for the expired timer text */
+    .expired {
+        color: red;
+    }
+    
+/* Responsive styles for buttons */
+.action-btns {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.action-btns .btn {
+    margin-bottom: 5px;
+    flex-basis: calc(50% - 10px); /* Adjusted for better spacing */
+}
+
+@media (min-width: 576px) {
+    .action-btns .btn {
+        flex-basis: calc(33.33% - 10px); /* Display 3 buttons per row */
+    }
+}
+
+@media (min-width: 768px) {
+    .action-btns .btn {
+        flex-basis: calc(25% - 10px); /* Display 4 buttons per row */
+    }
+}
+
+@media (min-width: 992px) {
+    .action-btns .btn {
+        flex-basis: calc(20% - 10px); /* Display 5 buttons per row */
+    }
+}
+
+@media (min-width: 1200px) {
+    .action-btns .btn {
+        flex-basis: calc(16.666% - 10px); /* Display 6 buttons per row */
+    }
+}
+
+
+    .paused{
+        color:green;
+    }
+</style>
+<div class="text-end mt-3 btn-container"> <!-- Wrap buttons in a container for better spacing -->
+    <a class="btn btn-success" href="{% url 'add_task' %}">Add Task</a>
+    <a class="btn btn-success" href="{% url 'chart' %}">Show Graph</a>
+</div>
+
+<h2 class="text-center mt-3">Task List</h2>
+<div class="table-responsive">
+    <table class="table table-bordered" id="myTable">
+        <thead>
+            <tr>
+                <th>S.NO</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Creation Date</th>
+                <th>Priority Based On Due_Date</th>
+                <th>Time Left</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    {% if task.status == 'C' %}
+                        <td><s>{{ task.title }}</s></td>
+                        <td><s>{{ task.description }}</s></td>
+                        <td><s>{{ task.date|timezone:"Asia/Karachi"|date:"M. d, Y, g:i a" }}</s></td>
+                    {% else %}
+                        <td>{{ task.title }}</td>
+                        <td>{{ task.description }}</td>
+                        <td>{{ task.date|timezone:"Asia/Karachi"|date:"M. d, Y, g:i a" }}</td>
+                    {% endif %}
+
+                    <td>
+                        {% if task.status == 'C' %}
+                            <s>{{ task.due_date|date:"M. d, Y, g:i A"|default:"N/A" }}</s>
+                        {% else %}
+                            {{ task.due_date|date:"M. d, Y, g:i A"|default:"N/A" }}
+                        {% endif %}
+                        <td>
+                            {% if task.status == 'P' %}
+                                <div id="time-left-{{ task.id }}" class="timer-container"></div>
+                                <script>
+                                    var dueDate{{ task.id }} = new Date("{{ task.due_date|date:'Y-m-d\TH:i:s' }}").getTime();
+                                    var timerElement{{ task.id }} = document.getElementById("time-left-{{ task.id }}");
+                                    var isTimerPaused{{ task.id }} = false; // Variable to track timer pause state
+                        
+                                    function updateTimer{{ task.id }}() {
+                                        if (!isTimerPaused{{ task.id }}) {
+                                            var now = new Date().getTime();
+                                            var timeLeft = dueDate{{ task.id }} - now;
+                        
+                                            if (timeLeft > 0) {
+                                                var days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                                                var hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                                var minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                                                var seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                        
+                                                // Use the expired class for expired timers
+                                                timerElement{{ task.id }}.className = "timer-container";
+                                                timerElement{{ task.id }}.innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+                                            } else {
+                                                clearInterval(timerInterval{{ task.id }});
+                        
+                                                // Apply the expired class
+                                                timerElement{{ task.id }}.className = "timer-container expired";
+                                                timerElement{{ task.id }}.innerHTML = "Time Over Now";
+                                            }
+                                        } else {
+                                            // Display "Paused" when the timer is paused
+                                            timerElement{{ task.id }}.className = "timer-container paused";
+                                            timerElement{{ task.id }}.innerHTML = "Paused";
+                                        }
+                                    }
+                        
+                                    var timerInterval{{ task.id }} = setInterval(updateTimer{{ task.id }}, 1000);
+                                    updateTimer{{ task.id }}();  // Initial call to set the timer immediately
+                        
+                                    // Add event listener to pause/resume the timer when check button is clicked
+                                    document.addEventListener('DOMContentLoaded', function() {
+                                        var checkButton{{ task.id }} = document.querySelector("#check-button-{{ task.id }}");
+                                        if (checkButton{{ task.id }}) {
+                                            checkButton{{ task.id }}.addEventListener("click", function() {
+                                                isTimerPaused{{ task.id }} = !isTimerPaused{{ task.id }};
+                                            });
+                                        }
+                                    });
+                                                            
+                                </script>
+                            {% else %}
+                                <!-- Display "Paused" when the task is completed -->
+                                <div class="timer-container paused">Paused</div>
+                            {% endif %}
+                        </td>
+                    <td>{{ task.status }}</td>
+                    <td>
+                        <div class="action-btns">
+                            <div>
+                                <a href="{% url 'delete_todo' todo_id=task.id %}" title="delete">
+                                    <button type="button" class="btn btn-danger mx-2"><i class="fa-solid fa-trash"></i></button>
+                                </a>
+                            </div>
+                            <div>
+                                <a href="{% url 'edit_todo' todo_id=task.id%}" title="edit">
+                                    <button type="button" class="btn btn-primary mx-2"><i class="fa-solid fa-pencil"></i></button>
+                                </a>
+                            </div>
+                            <div>
+                                {% if task.status == 'P' %}
+                                    <a href="/change-status/{{ task.id }}/C" title="Mark Completed">
+                                        <button type="button" class="btn btn-success mx-2 "><i class="fa-solid fa-check"></i></button>
+                                    </a>
+                                {% else %}
+                                    <a href="/change-status/{{ task.id }}/P" title="Mark Pending">
+                                        <button type="button" class="btn btn-success mx-2"><i class="fa-solid fa-clock"></i></button>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+<!-- Include DataTables script after jQuery -->
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
+
+<script>
+    jQuery(document).ready(function($) {
+        $('#myTable').DataTable();
+    });
+</script>
+{% endblock %}
+

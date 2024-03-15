@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify OTP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f4f4f4;
+    }
+
+    #otp-container {
+      width: 350px;
+      padding: 30px;
+      background-color: #fff;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    input[type="text"] {
+      width: 200px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    #submit-btn {
+      margin-top: 20px;
+      padding: 11px 27px;
+      font-size: 14px;
+      cursor: pointer;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+    }
+
+    #submit-btn:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+<div id="otp-container">
+    <input type="text" name="otp" id="otp" placeholder="Enter OTP">
+    <button id="submit-btn"><i class="fa fa-check"></i> Verify OTP</button>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('#otp').change(function(){
+      let userOtp = $('#otp').val();
+      let storedOtp = '{{otp}}';  // Retrieve the stored OTP from Django template variable
+
+      if (userOtp === storedOtp) {
+        // Include CSRF token in the AJAX request headers
+        let csrfToken = $('input[name=csrfmiddlewaretoken]').val();
+        
+        $.ajax({
+          type: "POST",
+          url: '{% url "verify_otp" %}',
+          data: {
+            'otp': userOtp,
+            'stored_otp': storedOtp,
+            'username': "{{uname}}",
+            'email': "{{email}}",
+            'password1': "{{pass1}}",
+            'password2': "{{pass2}}"
+          },
+          success: function(data) {
+            if (data.success) {
+              window.location.href = "/login/";  // Updated to use an absolute path
+            } else {
+              alert('Incorrect OTP. Please try again.');  // Handle incorrect OTP
+            }
+          },
+          error: function() {
+            alert('Error verifying OTP. Please try again.');  // Handle AJAX error
+          }
+        });
+      } else {
+        alert('Incorrect OTP. Please try again.');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
